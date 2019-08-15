@@ -16,3 +16,8 @@ Visual Studio 2017/Cmake, nugetが必要/x64 only/
 - Vulkan (wip)
 - OpenGL (will)
 - DirectX11 (will)
+
+## 参考
+参考というかDirectX12とvulkanは本を読みながら進めたのでコード部分は以下のリポジトリと99%一緒  
+- https://github.com/techlabxe/d3d12_book_1
+- https://github.com/techlabxe/vulkan_book_1
