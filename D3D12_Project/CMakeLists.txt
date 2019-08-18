@@ -6,7 +6,7 @@ add_executable(D3D12_Project
  ${LIB_SOURCE}
 )
 
-configure_file(${CMAKE_SOURCE_DIR}/D3D12_Project/packages.config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+# configure_file(${CMAKE_SOURCE_DIR}/D3D12_Project/packages.config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/D3D12_Project/shaders/triangleVs.hlsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/D3D12_Project/shaders/trianglePs.hlsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/D3D12_Project/shaders/textureVs.hlsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
