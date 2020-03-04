@@ -10,13 +10,8 @@ add_executable(Vulkan_Project
 )
 
 
-# configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/packages.config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/packages.config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/triangle.frag.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/triangle.vert.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
-
-
-
-
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
-
-

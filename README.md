@@ -8,6 +8,11 @@ Visual Studio 2017/Cmake, nugetが必要/x64 only/
 1. execute build.bat
 1. move build/
 1. open HelloGraphicsApi.sln
+1. nugetでライブラリインストール
+    - ツール/Nugetパッケージマネージャー/管理
+    - 参照
+    - "glfw"をVulkan_Projectにインストール
+    - "glm"をVulkan_Projectにインストール
 1. 任意のプロジェクトをスタートアップに設定
 1. 実行
 

@@ -6,9 +6,9 @@
 #include "D3D12AppTexture.h"
 #include <stdexcept>
 
-#define APP_BASE
+//#define APP_BASE
 //#define APP_TRIANGLE
-//#define APP_TEXTURE
+#define APP_TEXTURE
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	D3D12AppBase theApp{};
 #elif defined(APP_TRIANGLE)
 	D3D12AppTriangle theApp{};
-#eiif defined(APP_TEXTURE)
+#elif defined(APP_TEXTURE)
 	D3D12AppTexture theApp{};
 #else
 	D3D12AppBase theApp{};

@@ -7,8 +7,12 @@
 #include <sstream>
 #include <numeric>
 
+//#define APP_BASE
+#define APP_TRIANGLE
+//#define APP_TEXTURE
 
 #include "VkAppBase.h"
+#include "VkAppTriangle.h"
 
 #pragma comment(lib, "vulkan-1.lib")
 
@@ -25,7 +29,15 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 	auto window = glfwCreateWindow(WindowWidth, WindowHeight, AppTitle, nullptr, nullptr);
 
 	// Vulkan 初期化
+#if defined(APP_BASE)
 	VulkanAppBase theApp;
+#elif defined(APP_TRIANGLE)
+	VulkanAppTriangle theApp{};
+#elif defined(APP_TEXTURE)
+	//D3D12AppTexture theApp{};
+#else
+	VulkanAppBase theApp;
+#endif
 	theApp.initialize(window, AppTitle);
 
 	while (glfwWindowShouldClose(window) == GLFW_FALSE)
