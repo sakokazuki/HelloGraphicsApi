@@ -4,11 +4,13 @@
 #include "D3D12AppBase.h"
 #include "D3D12AppTriangle.h"
 #include "D3D12AppTexture.h"
+#include "D3D12AppOffscreen.h"
 #include <stdexcept>
 
 //#define APP_BASE
 //#define APP_TRIANGLE
-#define APP_TEXTURE
+//#define APP_TEXTURE
+#define APP_OFFSCREEN
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
@@ -39,6 +41,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	D3D12AppTriangle theApp{};
 #elif defined(APP_TEXTURE)
 	D3D12AppTexture theApp{};
+#elif defined(APP_OFFSCREEN)
+	D3D12AppOffscreen theApp{};
 #else
 	D3D12AppBase theApp{};
 #endif

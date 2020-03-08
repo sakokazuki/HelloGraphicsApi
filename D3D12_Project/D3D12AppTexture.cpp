@@ -263,6 +263,31 @@ void D3D12AppTexture::MakeCommand(ComPtr<ID3D12GraphicsCommandList>& command)
 		constantBuffer->Unmap(0, nullptr);
 	}
 
+	// スワップチェイン表示可能からレンダーターゲット描画可能へ
+	auto barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	command->ResourceBarrier(1, &barrierToRT);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(
+		m_heapRtv->GetCPUDescriptorHandleForHeapStart(),
+		m_frameIndex, m_rtvDescriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsv(
+		m_heapDsv->GetCPUDescriptorHandleForHeapStart()
+	);
+
+	// カラーバッファ(レンダーターゲットビュー)のクリア
+	const float clearColor[] = { 0.1f,0.25f,0.5f,0.0f }; // クリア色
+	command->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+
+	// デプスバッファ(デプスステンシルビュー)のクリア
+	command->ClearDepthStencilView(
+		dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	// 描画先をセット
+	command->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+
 	// パイプラインステートのセット
 	command->SetPipelineState(m_pipeline.Get());
 	// ルートシグネチャのセット
@@ -288,6 +313,14 @@ void D3D12AppTexture::MakeCommand(ComPtr<ID3D12GraphicsCommandList>& command)
 
 	// 描画命令の発行
 	command->DrawIndexedInstanced(m_indexCount, 1, 0, 0, 0);
+
+	// レンダーターゲットからスワップチェイン表示可能へ
+	auto barrierToPresent = CD3DX12_RESOURCE_BARRIER::Transition(
+		m_renderTargets[m_frameIndex].Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PRESENT
+	);
+	command->ResourceBarrier(1, &barrierToPresent);
 }
 
 D3D12AppTexture::ComPtr<ID3D12Resource1> D3D12AppTexture::CreateBuffer(UINT bufferSize, const void* initialData)

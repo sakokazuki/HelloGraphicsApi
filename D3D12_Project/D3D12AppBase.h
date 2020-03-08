@@ -27,7 +27,7 @@ public:
 	virtual void Render();
 	virtual void Prepare() {}
 	virtual void Cleanup() {}
-	virtual void MakeCommand(ComPtr<ID3D12GraphicsCommandList> &command) {}
+	virtual void MakeCommand(ComPtr<ID3D12GraphicsCommandList> &command);
 
 
 	const UINT GpuWaitTimeout = (10 * 1000);
@@ -66,5 +66,8 @@ protected:
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;
 
 	UINT m_frameIndex;
+
+	UINT m_viewportWidth;
+	UINT m_viewportHeight;
 
 };

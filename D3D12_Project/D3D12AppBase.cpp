@@ -36,7 +36,7 @@ void D3D12AppBase::Initialize(HWND hwnd)
 		debug->EnableDebugLayer();
 		dxgiFlags |= DXGI_CREATE_FACTORY_DEBUG;
 
-#if 0
+#if 1
 
 		ComPtr<ID3D12Debug3> debug3;
 		debug.As(&debug3);
@@ -105,6 +105,8 @@ void D3D12AppBase::Initialize(HWND hwnd)
 	GetClientRect(hwnd, &rect);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
+	m_viewportWidth = width;
+	m_viewportHeight = height;
 
 	// スワップチェインの生成
 	{
@@ -180,12 +182,26 @@ void D3D12AppBase::Render()
 		nullptr
 	);
 
+	MakeCommand(m_commandList);
+
+	m_commandList->Close();
+
+	ID3D12CommandList* lists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(1, lists);
+
+	m_swapchain->Present(1, 0);
+
+	WaitPreviousFrame();
+}
+
+void D3D12AppBase::MakeCommand(ComPtr<ID3D12GraphicsCommandList> &command)
+{
 	// スワップチェイン表示可能からレンダーターゲット描画可能へ
 	auto barrierToRT = CD3DX12_RESOURCE_BARRIER::Transition(
 		m_renderTargets[m_frameIndex].Get(),
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	m_commandList->ResourceBarrier(1, &barrierToRT);
+	command->ResourceBarrier(1, &barrierToRT);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(
 		m_heapRtv->GetCPUDescriptorHandleForHeapStart(),
@@ -196,16 +212,14 @@ void D3D12AppBase::Render()
 
 	// カラーバッファ(レンダーターゲットビュー)のクリア
 	const float clearColor[] = { 0.1f,0.25f,0.5f,0.0f }; // クリア色
-	m_commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+	command->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 
 	// デプスバッファ(デプスステンシルビュー)のクリア
-	m_commandList->ClearDepthStencilView(
+	command->ClearDepthStencilView(
 		dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	// 描画先をセット
-	m_commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
-	MakeCommand(m_commandList);
+	command->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
 
 	// レンダーターゲットからスワップチェイン表示可能へ
@@ -214,16 +228,7 @@ void D3D12AppBase::Render()
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PRESENT
 	);
-	m_commandList->ResourceBarrier(1, &barrierToPresent);
-
-	m_commandList->Close();
-
-	ID3D12CommandList* lists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(1, lists);
-
-	m_swapchain->Present(1, 0);
-
-	WaitPreviousFrame();
+	command->ResourceBarrier(1, &barrierToPresent);
 }
 
 void D3D12AppBase::PrepareDescriptorHeaps()
