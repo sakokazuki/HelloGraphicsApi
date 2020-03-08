@@ -14,8 +14,6 @@
 #include "VkAppBase.h"
 #include "VkAppTriangle.h"
 
-#pragma comment(lib, "vulkan-1.lib")
-
 const int WindowWidth = 640, WindowHeight = 480;
 const char* AppTitle = "ClearScreen";
 
