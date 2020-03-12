@@ -20,5 +20,9 @@ target_link_libraries(Vulkan_Project "glfw3.lib")
 configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/packages.config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/triangle.frag.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/triangle.vert.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/texture.frag.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/texture.vert.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/texture.tga ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")

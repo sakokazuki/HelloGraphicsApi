@@ -3,9 +3,15 @@
 複数のAPIに入門することで理解が深まるのではないかという仮定でとりあえずテクスチャ貼るくらいまでをやる
 
 ## Setup
-Visual Studio 2017/Cmake, nugetが必要/x64 only/
+
+【local enviroment】  
+- Visual Studio 2017
+- Cmake >=3.15 (for nuget packcages)
+- x64 only
+
+【build】  
 1. clone repogitory
-1. execute build.bat
+1. execute generateproject.bat
 1. move build/
 1. open HelloGraphicsApi.sln
 1. nugetでライブラリインストール

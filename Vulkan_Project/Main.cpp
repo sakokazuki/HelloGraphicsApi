@@ -8,11 +8,12 @@
 #include <numeric>
 
 //#define APP_BASE
-#define APP_TRIANGLE
-//#define APP_TEXTURE
+//#define APP_TRIANGLE
+#define APP_TEXTURE
 
 #include "VkAppBase.h"
 #include "VkAppTriangle.h"
+#include "VkAppTexture.h"
 
 const int WindowWidth = 640, WindowHeight = 480;
 const char* AppTitle = "ClearScreen";
@@ -32,7 +33,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 #elif defined(APP_TRIANGLE)
 	VulkanAppTriangle theApp{};
 #elif defined(APP_TEXTURE)
-	//D3D12AppTexture theApp{};
+	VulkanAppTexture theApp{};
 #else
 	VulkanAppBase theApp;
 #endif
