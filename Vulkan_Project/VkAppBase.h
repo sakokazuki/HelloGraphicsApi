@@ -25,7 +25,7 @@ public:
 
 	virtual void prepare() {}
 	virtual void cleanup() {}
-	virtual void makeCommand(VkCommandBuffer command) {}
+	virtual void makeCommand(VkCommandBuffer command);
 protected:
 	static void checkResult(VkResult);
 
@@ -50,6 +50,10 @@ protected:
 	void enableDebugReport();
 	void disableDebugReport();
 
+	VkExtent2D getSwapchainExtent()
+	{
+		return m_swapchainExtent;
+	}
 
 	VkInstance  m_instance;
 	VkDevice    m_device;

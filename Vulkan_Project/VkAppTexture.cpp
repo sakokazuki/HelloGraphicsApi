@@ -6,7 +6,7 @@
 
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "libs/stb_image.h"
 
 using namespace glm;
 using namespace std;
@@ -178,37 +178,63 @@ void VulkanAppTexture::cleanup()
 
 void VulkanAppTexture::makeCommand(VkCommandBuffer command)
 {
-	// ユニフォームバッファの中身を更新
-	ShaderParameters shaderParam{};
-	shaderParam.mtxWorld = glm::rotate(glm::identity<glm::mat4>(), glm::radians(45.0f), glm::vec3(0, 1, 0));
-	shaderParam.mtxView = lookAtRH(vec3(0.0f, 3.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-	shaderParam.mtxProj = perspective(glm::radians(60.0f), 640.0f / 480, 0.01f, 100.0f);
+
+	array<VkClearValue, 2> clearValue = {
+		{ {0.5f, 0.25f, 0.25f, 0.0f},
+		  {1.0f, 0}
+		}
+	};
+
+	VkRenderPassBeginInfo renderPassBI{};
+	renderPassBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBI.renderPass = m_renderPass;
+	renderPassBI.framebuffer = m_framebuffers[m_imageIndex];
+	renderPassBI.renderArea.offset = VkOffset2D{ 0, 0 };
+	renderPassBI.renderArea.extent = m_swapchainExtent;
+	renderPassBI.pClearValues = clearValue.data();
+	renderPassBI.clearValueCount = uint32_t(clearValue.size());
+
+
+	vkCmdBeginRenderPass(command, &renderPassBI, VK_SUBPASS_CONTENTS_INLINE);
 
 	{
-		auto memory = m_uniformBuffers[m_imageIndex].memory;
-		void *p;
-		vkMapMemory(m_device, memory, 0, VK_WHOLE_SIZE, 0, &p);
-		memcpy(p, &shaderParam, sizeof(shaderParam));
-		vkUnmapMemory(m_device, memory);
+		// ユニフォームバッファの中身を更新
+		ShaderParameters shaderParam{};
+		shaderParam.mtxWorld = glm::rotate(glm::identity<glm::mat4>(), glm::radians(45.0f), glm::vec3(0, 1, 0));
+		shaderParam.mtxView = lookAtRH(vec3(0.0f, 3.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+		shaderParam.mtxProj = perspective(glm::radians(60.0f), 640.0f / 480, 0.01f, 100.0f);
+
+		{
+			auto memory = m_uniformBuffers[m_imageIndex].memory;
+			void *p;
+			vkMapMemory(m_device, memory, 0, VK_WHOLE_SIZE, 0, &p);
+			memcpy(p, &shaderParam, sizeof(shaderParam));
+			vkUnmapMemory(m_device, memory);
+		}
+
+		// 作成したパイプラインをセット
+		vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+
+		// 各バッファオブジェクトのセット
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(command, 0, 1, &m_vertexBuffer.buffer, &offset);
+		vkCmdBindIndexBuffer(command, m_indexBuffer.buffer, offset, VK_INDEX_TYPE_UINT32);
+
+		// ディスクリプタセットをセット
+		VkDescriptorSet descriptorSets[] = {
+		  m_descriptorSet[m_imageIndex]
+		};
+		vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, descriptorSets, 0, nullptr);
+
+		// 3角形描画
+		vkCmdDrawIndexed(command, m_indexCount, 1, 0, 0, 0);
+
+
 	}
 
-	// 作成したパイプラインをセット
-	vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
-	// 各バッファオブジェクトのセット
-	VkDeviceSize offset = 0;
-	vkCmdBindVertexBuffers(command, 0, 1, &m_vertexBuffer.buffer, &offset);
-	vkCmdBindIndexBuffer(command, m_indexBuffer.buffer, offset, VK_INDEX_TYPE_UINT32);
-
-	// ディスクリプタセットをセット
-	VkDescriptorSet descriptorSets[] = {
-	  m_descriptorSet[m_imageIndex]
-	};
-	vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, descriptorSets, 0, nullptr);
-
-	// 3角形描画
-	vkCmdDrawIndexed(command, m_indexCount, 1, 0, 0, 0);
-
+	// end commandbuffer and renderpass
+	vkCmdEndRenderPass(command);
 }
 
 

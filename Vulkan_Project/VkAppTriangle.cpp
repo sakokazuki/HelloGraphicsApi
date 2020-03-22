@@ -171,16 +171,41 @@ void VulkanAppTriangle::cleanup()
 
 void VulkanAppTriangle::makeCommand(VkCommandBuffer command)
 {
-	// 作成したパイプラインをセット
-	vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
-	// 各バッファオブジェクトのセット
-	VkDeviceSize offset = 0;
-	vkCmdBindVertexBuffers(command, 0, 1, &m_vertexBuffer.buffer, &offset);
-	vkCmdBindIndexBuffer(command, m_indexBuffer.buffer, offset, VK_INDEX_TYPE_UINT32);
+	array<VkClearValue, 2> clearValue = {
+		{ {0.5f, 0.25f, 0.25f, 0.0f},
+		  {1.0f, 0}
+		}
+	};
 
-	// 3角形描画
-	vkCmdDrawIndexed(command, m_indexCount, 1, 0, 0, 0);
+	VkRenderPassBeginInfo renderPassBI{};
+	renderPassBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBI.renderPass = m_renderPass;
+	renderPassBI.framebuffer = m_framebuffers[m_imageIndex];
+	renderPassBI.renderArea.offset = VkOffset2D{ 0, 0 };
+	renderPassBI.renderArea.extent = m_swapchainExtent;
+	renderPassBI.pClearValues = clearValue.data();
+	renderPassBI.clearValueCount = uint32_t(clearValue.size());
+
+
+	vkCmdBeginRenderPass(command, &renderPassBI, VK_SUBPASS_CONTENTS_INLINE);
+
+	{
+		// 作成したパイプラインをセット
+		vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+
+		// 各バッファオブジェクトのセット
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(command, 0, 1, &m_vertexBuffer.buffer, &offset);
+		vkCmdBindIndexBuffer(command, m_indexBuffer.buffer, offset, VK_INDEX_TYPE_UINT32);
+
+		// 3角形描画
+		vkCmdDrawIndexed(command, m_indexCount, 1, 0, 0, 0);
+	}
+
+	// end commandbuffer and renderpass
+	vkCmdEndRenderPass(command);
+	
 }
 
 

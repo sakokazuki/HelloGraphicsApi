@@ -377,7 +377,7 @@ void VulkanAppBase::createDepthBuffer()
 	vkGetImageMemoryRequirements(m_device, m_depthBuffer, &reqs);
 
 	VkMemoryAllocateInfo ai{};
-	ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
+	ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	ai.allocationSize = reqs.size;
 	ai.memoryTypeIndex = getMemoryTypeIndex(reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	
@@ -589,34 +589,19 @@ void VulkanAppBase::render()
 	auto commandFence = m_fences[nextImageIndex];
 	vkWaitForFences(m_device, 1, &commandFence, VK_TRUE, UINT64_MAX);
 
-	array<VkClearValue, 2> clearValue = {
-		{ {0.5f, 0.25f, 0.25f, 0.0f},
-		  {1.0f, 0}
-		}
-	};
+	auto& command = m_commands[nextImageIndex];
+	m_imageIndex = nextImageIndex;
 
-	VkRenderPassBeginInfo renderPassBI{};
-	renderPassBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassBI.renderPass = m_renderPass;
-	renderPassBI.framebuffer = m_framebuffers[nextImageIndex];
-	renderPassBI.renderArea.offset = VkOffset2D{ 0, 0 };
-	renderPassBI.renderArea.extent = m_swapchainExtent;
-	renderPassBI.pClearValues = clearValue.data();
-	renderPassBI.clearValueCount = uint32_t(clearValue.size());
-	
 	// begin commandbuffer and renderpass
 	VkCommandBufferBeginInfo commandBI{};
 	commandBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	auto& command = m_commands[nextImageIndex];
-	vkBeginCommandBuffer(command, &commandBI);
-	vkCmdBeginRenderPass(command, &renderPassBI, VK_SUBPASS_CONTENTS_INLINE);
 
-	m_imageIndex = nextImageIndex;
+	vkBeginCommandBuffer(command, &commandBI);
+
 	makeCommand(command);
 
-	// end commandbuffer and renderpass
-	vkCmdEndRenderPass(command);
 	vkEndCommandBuffer(command);
+
 
 	// execute command
 	VkSubmitInfo submitInfo{};
@@ -642,4 +627,30 @@ void VulkanAppBase::render()
 	presentInfo.pWaitSemaphores = &m_renderCompletedSem;
 	vkQueuePresentKHR(m_deviceQueue, &presentInfo);
 
+}
+
+void VulkanAppBase::makeCommand(VkCommandBuffer command)
+{
+	array<VkClearValue, 2> clearValue = {
+		{ {0.5f, 0.25f, 0.25f, 0.0f},
+		  {1.0f, 0}
+		}
+	};
+
+	VkRenderPassBeginInfo renderPassBI{};
+	renderPassBI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBI.renderPass = m_renderPass;
+	renderPassBI.framebuffer = m_framebuffers[m_imageIndex];
+	renderPassBI.renderArea.offset = VkOffset2D{ 0, 0 };
+	renderPassBI.renderArea.extent = m_swapchainExtent;
+	renderPassBI.pClearValues = clearValue.data();
+	renderPassBI.clearValueCount = uint32_t(clearValue.size());
+
+
+	vkCmdBeginRenderPass(command, &renderPassBI, VK_SUBPASS_CONTENTS_INLINE);
+
+	
+
+	// end commandbuffer and renderpass
+	vkCmdEndRenderPass(command);
 }

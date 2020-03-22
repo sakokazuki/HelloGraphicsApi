@@ -9,14 +9,16 @@
 
 //#define APP_BASE
 //#define APP_TRIANGLE
-#define APP_TEXTURE
+//#define APP_TEXTURE
+#define APP_OFFSCREEN
 
 #include "VkAppBase.h"
 #include "VkAppTriangle.h"
 #include "VkAppTexture.h"
+#include "VkAppOffScreen.h"
 
 const int WindowWidth = 640, WindowHeight = 480;
-const char* AppTitle = "ClearScreen";
+const char* AppTitle = "HelloVulkan";
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
@@ -34,6 +36,8 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 	VulkanAppTriangle theApp{};
 #elif defined(APP_TEXTURE)
 	VulkanAppTexture theApp{};
+#elif defined(APP_OFFSCREEN)
+	VulkanAppOffscreen theApp{};
 #else
 	VulkanAppBase theApp;
 #endif
