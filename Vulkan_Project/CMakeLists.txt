@@ -16,6 +16,9 @@ add_executable(Vulkan_Project
 target_link_libraries(Vulkan_Project "vulkan-1.lib")
 target_link_libraries(Vulkan_Project "glfw3.lib")
 
+# C++の標準規格の指定
+target_compile_features(D3D12_Project PUBLIC cxx_std_17)
+
 
 configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/packages.config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/Vulkan_Project/shaders/triangle.frag.spv ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)

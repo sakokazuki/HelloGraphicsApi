@@ -15,6 +15,9 @@ configure_file(${CMAKE_SOURCE_DIR}/D3D12_Project/texture.tga ${CMAKE_CURRENT_BIN
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
 
+# C++の標準規格の指定
+target_compile_features(D3D12_Project PUBLIC cxx_std_17)
+
 add_custom_command(TARGET D3D12_Project POST_BUILD
  COMMAND copy /Y
  "C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\D3D\\x64\\dxcompiler.dll"
@@ -25,4 +28,3 @@ add_custom_command(TARGET D3D12_Project POST_BUILD
  "C:\\Program Files (x86)\\Windows Kits\\10\\Redist\\D3D\\x64\\dxil.dll"
  "$(TargetDir)dxil.dll"
 )
-
