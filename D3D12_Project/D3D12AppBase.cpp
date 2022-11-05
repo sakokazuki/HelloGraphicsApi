@@ -1,12 +1,14 @@
 #include "D3D12AppBase.h"
 #include <exception>
 #include <fstream>
-#include <experimental/filesystem>
+#include <iostream>
+#include <filesystem>
 
 #include <dxcapi.h>
 #pragma comment(lib, "dxcompiler.lib")
 
 using namespace Microsoft::WRL;
+using namespace std::filesystem;
 
 
 D3D12AppBase::D3D12AppBase()
@@ -386,7 +388,6 @@ void D3D12AppBase::WaitPreviousFrame()
 HRESULT D3D12AppBase::CompileShaderFromFile(
 	const std::wstring& fileName, const std::wstring& profile, ComPtr<ID3DBlob>& shaderBlob, ComPtr<ID3DBlob>& errorBlob)
 {
-	using namespace std::experimental::filesystem;
 	path filePath(fileName);
 	std::ifstream infile(filePath);
 	std::vector<char> srcData;
