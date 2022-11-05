@@ -21,7 +21,7 @@ void D3D12AppOffscreen::Prepare()
 			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 			D3D12_HEAP_FLAG_NONE,
 			&offscreenBufferDesc,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			nullptr,
 			IID_PPV_ARGS(&m_offsecreenBuffer)
 		);
@@ -221,7 +221,8 @@ void D3D12AppOffscreen::Prepare()
 		psoDesc.NumRenderTargets = 1;
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		// デプスバッファのフォーマットを設定
-		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		//psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
 		psoDesc.InputLayout = { inputElementDesc, _countof(inputElementDesc) };
 		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 		// ルートシグネチャのセット
